@@ -8,10 +8,12 @@ class Enemy extends Entity {
         this.maxHealth = 30;
         this.health = 30;
         this.speed = 20.0;
-        this.size = 0.8;
+        this.size = 1.5;  // Increased from 0.8 to be more visible
         this.damage = 5;
 
         this.velocity = new Vector2(0, 0);
+
+        console.log(`Enemy created at (${position.x.toFixed(1)}, ${position.y.toFixed(1)})`);
     }
 
     update(deltaTime) {
@@ -48,17 +50,23 @@ class Enemy extends Entity {
     }
 
     render(renderer) {
+        // Draw glow effect for visibility
+        renderer.drawGlow(this.position, this.size * 2, Color.RED, 0.3);
+
         // Draw enemy as a circle
         renderer.drawCircle(this.position, this.size, Color.RED, true);
-        renderer.drawCircle(this.position, this.size, Color.WHITE, false);
+
+        // Brighter outline for better visibility
+        const brightRed = new Color(255, 100, 100);
+        renderer.drawCircle(this.position, this.size, brightRed, false);
 
         // Draw health bar
         if (this.health < this.maxHealth) {
             const healthPercent = this.health / this.maxHealth;
-            renderer.drawHealthBar(this.position, 1.5, 0.2, healthPercent, 1.2);
+            renderer.drawHealthBar(this.position, 2.0, 0.3, healthPercent, 1.8);
         }
 
-        // Draw direction indicator
+        // Draw direction indicator (pointing at player)
         const dirEnd = this.position.add(Vector2.fromAngle(this.rotation, this.size * 1.5));
         renderer.drawLine(this.position, dirEnd, Color.YELLOW, 2);
     }

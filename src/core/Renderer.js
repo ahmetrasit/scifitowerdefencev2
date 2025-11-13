@@ -226,8 +226,5 @@ class Renderer {
             this.ctx.lineTo(bounds.right, y);
             this.ctx.stroke();
         }
-
-        // Draw origin
-        this.drawCircle(Vector2.zero(), 5 / this.camera.zoom, Color.RED);
     }
 }

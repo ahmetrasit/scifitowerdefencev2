@@ -52,9 +52,10 @@ function addTestEnemies() {
 
         const enemy = new Enemy(new Vector2(x, y));
         game.state.enemies.push(enemy);
+        console.log(`Spawned enemy ${i+1} at (${x.toFixed(1)}, ${y.toFixed(1)})`);
     }
 
-    console.log(`Spawned ${enemyCount} test enemies`);
+    console.log(`Spawned ${enemyCount} test enemies total. Current enemy count: ${game.state.enemies.length}`);
 }
 
 // Expose helper functions for debugging
