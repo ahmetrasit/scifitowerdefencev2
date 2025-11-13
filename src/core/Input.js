@@ -156,7 +156,11 @@ const Keys = {
     DIGIT_7: 'Digit7',
     DIGIT_8: 'Digit8',
     DIGIT_9: 'Digit9',
-    DIGIT_0: 'Digit0'
+    DIGIT_0: 'Digit0',
+    LEFT: 'ArrowLeft',
+    RIGHT: 'ArrowRight',
+    UP: 'ArrowUp',
+    DOWN: 'ArrowDown'
 };
 
 // Mouse button constants

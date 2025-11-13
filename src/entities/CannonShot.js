@@ -3,12 +3,12 @@
  * Fired from mounted Core turret
  */
 class CannonShot extends Projectile {
-    constructor(position, direction, speed, damage, maxRange, owner, splashRadius = 15.0) {
+    constructor(position, direction, speed, damage, maxRange, owner, splashRadius = 40.0) {
         super(position, direction, speed, damage, maxRange, owner);
 
         this.splashRadius = splashRadius;
-        this.splashDamage = damage * 0.5; // Splash does 50% of direct hit damage
-        this.size = 2.0; // Larger than regular bullets
+        this.splashDamage = damage * 0.8; // Splash does 80% of direct hit damage
+        this.size = 5.0; // MASSIVE projectile
         this.isCannon = true;
     }
 
@@ -68,18 +68,36 @@ class CannonShot extends Projectile {
     render(renderer) {
         if (!this.position) return;
 
-        // Draw cannon shot as a large orange circle with glow
-        renderer.drawGlow(this.position, this.size * 3, Color.ORANGE, 0.4);
+        // Draw MASSIVE cannon shot with multiple glows
+        // Outer glow - red
+        renderer.drawGlow(this.position, this.size * 6, Color.RED, 0.2);
+
+        // Mid glow - orange
+        renderer.drawGlow(this.position, this.size * 4, Color.ORANGE, 0.5);
+
+        // Inner glow - yellow
+        renderer.drawGlow(this.position, this.size * 2, Color.YELLOW, 0.7);
+
+        // Main projectile body
         renderer.drawCircle(this.position, this.size, Color.ORANGE, true);
 
-        // Draw bright yellow core
-        renderer.drawCircle(this.position, this.size * 0.5, Color.YELLOW, true);
+        // Bright yellow core
+        renderer.drawCircle(this.position, this.size * 0.6, Color.YELLOW, true);
 
-        // Draw trail (thicker for cannon)
+        // White hot center
+        renderer.drawCircle(this.position, this.size * 0.3, Color.WHITE, true);
+
+        // Draw MASSIVE trail
         if (this.velocity && this.velocity.lengthSquared() > 0) {
             const trailDir = this.velocity.normalized();
-            const trailStart = this.position.subtract(trailDir.multiply(4.0));
-            renderer.drawLine(trailStart, this.position, Color.ORANGE, 8);
+            const trailLength = 10.0;
+            const trailStart = this.position.subtract(trailDir.multiply(trailLength));
+
+            // Thick orange trail
+            renderer.drawLine(trailStart, this.position, Color.ORANGE, 15);
+
+            // Yellow core trail
+            renderer.drawLine(trailStart, this.position, Color.YELLOW, 8);
         }
     }
 

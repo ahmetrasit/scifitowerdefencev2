@@ -73,12 +73,20 @@ class Core extends Building {
             const barrelEnd = this.position.add(Vector2.fromAngle(game.state.player.rotation, barrelLength));
             renderer.drawLine(this.position, barrelEnd, Color.ORANGE, 8);
 
-            // Draw "MANNED" indicator
+            // Draw "MANNED" indicator with controls
             renderer.drawText(
-                'MANNED - Press E to Dismount',
+                'ARTILLERY MODE - E to Dismount',
                 this.position.add(new Vector2(0, -size - 15)),
                 Color.YELLOW,
                 16
+            );
+
+            // Draw aiming controls
+            renderer.drawText(
+                'A/D or ← → to Aim | Click to Fire',
+                this.position.add(new Vector2(0, -size - 30)),
+                Color.ORANGE,
+                14
             );
         }
 

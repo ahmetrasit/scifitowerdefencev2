@@ -29,6 +29,9 @@ class Player extends Entity {
         this.isMounted = false;
         this.mountedBuilding = null;
         this.mountRange = 20.0; // Distance to mount
+
+        // Turret rotation (for keyboard aiming when mounted)
+        this.turretRotationSpeed = 2.0; // Radians per second
     }
 
     update(deltaTime, input) {
@@ -50,8 +53,8 @@ class Player extends Entity {
             }
         }
 
-        // Rotation (aim at mouse)
-        this.updateRotation(input);
+        // Rotation (aim at mouse or keyboard when mounted)
+        this.updateRotation(input, deltaTime);
 
         // Shooting
         this.updateShooting(deltaTime, input);
@@ -128,10 +131,26 @@ class Player extends Entity {
         }
     }
 
-    updateRotation(input) {
-        const mousePos = input.getMouseWorldPosition();
-        const direction = mousePos.subtract(this.position);
-        this.rotation = direction.angle();
+    updateRotation(input, deltaTime) {
+        // When mounted on Core, use keyboard aiming (A/D or arrow keys)
+        if (this.isMounted && this.mountedBuilding && this.mountedBuilding.isCore) {
+            // Keyboard rotation
+            let rotationInput = 0;
+
+            if (input.isKeyPressed(Keys.A) || input.isKeyPressed(Keys.LEFT)) {
+                rotationInput -= 1; // Rotate left
+            }
+            if (input.isKeyPressed(Keys.D) || input.isKeyPressed(Keys.RIGHT)) {
+                rotationInput += 1; // Rotate right
+            }
+
+            this.rotation += rotationInput * this.turretRotationSpeed * deltaTime;
+        } else {
+            // Normal mouse aiming
+            const mousePos = input.getMouseWorldPosition();
+            const direction = mousePos.subtract(this.position);
+            this.rotation = direction.angle();
+        }
     }
 
     updateShooting(deltaTime, input) {
@@ -149,7 +168,7 @@ class Player extends Entity {
 
         let projectile;
 
-        // When mounted on Core, fire powerful cannon shots with splash damage
+        // When mounted on Core, fire powerful cannon shots with MASSIVE splash damage
         if (this.isMounted && this.mountedBuilding && this.mountedBuilding.isCore) {
             projectile = new CannonShot(
                 spawnPos,
@@ -158,7 +177,7 @@ class Player extends Entity {
                 this.damage,
                 this.range,
                 'player',
-                20.0  // Splash radius
+                50.0  // MASSIVE splash radius
             );
         } else {
             // Normal bullets
