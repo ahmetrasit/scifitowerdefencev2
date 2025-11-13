@@ -2,6 +2,15 @@
  * Enemy - Enemy units with pathfinding and AI
  */
 
+// Enemy types
+const EnemyType = {
+    SWARMER: 'swarmer',
+    TANK: 'tank',
+    RUNNER: 'runner',
+    SUPPORT: 'support',
+    BOSS: 'boss'
+};
+
 // Enemy state machine
 const EnemyState = {
     MOVING: 'moving',

@@ -1,15 +1,7 @@
 /**
  * WaveManager - Manages enemy wave spawning and progression
+ * Note: EnemyType is defined in Enemy.js
  */
-
-// Enemy type constants
-const EnemyType = {
-    SWARMER: 'swarmer',
-    TANK: 'tank',
-    RUNNER: 'runner',
-    SUPPORT: 'support',
-    BOSS: 'boss'
-};
 
 class WaveManager {
     constructor(gameManager) {
