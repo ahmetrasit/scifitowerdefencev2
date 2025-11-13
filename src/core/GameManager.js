@@ -13,7 +13,7 @@ class GameManager {
         // Game systems
         this.resourceManager = new ResourceManager();
         this.state = new GameState();
-        this.grid = new Grid(200, 200, 2.0);
+        this.grid = new Grid(200, 200, 20.0);  // 10x larger tiles (was 2.0)
 
         // Managers (will be initialized later)
         this.waveManager = null;
