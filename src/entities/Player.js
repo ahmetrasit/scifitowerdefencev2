@@ -12,26 +12,98 @@ class Player extends Entity {
 
         this.velocity = new Vector2(0, 0);
 
-        // Shooting
-        this.fireRate = 5.0; // Shots per second
+        // Shooting (base stats)
+        this.baseFireRate = 5.0;
+        this.baseDamage = 10;
+        this.baseRange = 90.0;
+        this.baseProjectileSpeed = 200.0;
+
+        // Current stats (can be modified by mounting)
+        this.fireRate = this.baseFireRate;
+        this.damage = this.baseDamage;
+        this.range = this.baseRange;
+        this.projectileSpeed = this.baseProjectileSpeed;
         this.lastFireTime = 0;
-        this.projectileSpeed = 200.0;
-        this.damage = 10;
-        this.range = 90.0;  // 3x larger (was 30.0)
+
+        // Mounting system
+        this.isMounted = false;
+        this.mountedBuilding = null;
+        this.mountRange = 20.0; // Distance to mount
     }
 
     update(deltaTime, input) {
         // Update last fire time
         this.lastFireTime += deltaTime;
 
-        // Movement
-        this.updateMovement(deltaTime, input);
+        // Check for mounting/dismounting
+        this.updateMounting(input);
+
+        // Movement (only if not mounted)
+        if (!this.isMounted) {
+            this.updateMovement(deltaTime, input);
+        } else {
+            // When mounted, stay at building position
+            this.velocity.x = 0;
+            this.velocity.y = 0;
+            if (this.mountedBuilding) {
+                this.position = this.mountedBuilding.position.clone();
+            }
+        }
 
         // Rotation (aim at mouse)
         this.updateRotation(input);
 
         // Shooting
         this.updateShooting(deltaTime, input);
+    }
+
+    updateMounting(input) {
+        // Check for E key to mount/dismount
+        if (input.isKeyJustPressed(Keys.E)) {
+            if (this.isMounted) {
+                this.dismount();
+            } else {
+                this.tryMount();
+            }
+        }
+    }
+
+    tryMount() {
+        // Check if near Core building
+        if (game.state.coreBuilding) {
+            const distance = this.position.distanceTo(game.state.coreBuilding.position);
+            if (distance <= this.mountRange + game.state.coreBuilding.size) {
+                this.mount(game.state.coreBuilding);
+            }
+        }
+    }
+
+    mount(building) {
+        this.isMounted = true;
+        this.mountedBuilding = building;
+
+        // Enhanced stats when mounted on Core
+        if (building.isCore) {
+            this.fireRate = this.baseFireRate * 3.0;      // 3x fire rate
+            this.damage = this.baseDamage * 2.0;          // 2x damage
+            this.range = this.baseRange * 2.0;            // 2x range
+            this.projectileSpeed = this.baseProjectileSpeed * 1.5;  // 1.5x projectile speed
+        }
+
+        console.log(`Mounted ${building.constructor.name}! Enhanced stats: ${this.damage} damage, ${this.fireRate.toFixed(1)} fire rate, ${this.range} range`);
+    }
+
+    dismount() {
+        console.log(`Dismounted from ${this.mountedBuilding.constructor.name}`);
+
+        this.isMounted = false;
+        this.mountedBuilding = null;
+
+        // Restore base stats
+        this.fireRate = this.baseFireRate;
+        this.damage = this.baseDamage;
+        this.range = this.baseRange;
+        this.projectileSpeed = this.baseProjectileSpeed;
     }
 
     updateMovement(deltaTime, input) {
@@ -102,6 +174,16 @@ class Player extends Entity {
     }
 
     render(renderer) {
+        // Only render player if not mounted (when mounted, Core will show we're there)
+        if (this.isMounted) {
+            // Show we're mounted by drawing a pulsing indicator on the building
+            if (this.mountedBuilding) {
+                const pulseSize = 5.0 + Math.sin(Date.now() / 200) * 2.0;
+                renderer.drawCircle(this.mountedBuilding.position, pulseSize, Color.YELLOW, false);
+            }
+            return;
+        }
+
         // Draw player as a triangle pointing in rotation direction
         const size = this.size;
         const points = [
@@ -127,5 +209,31 @@ class Player extends Entity {
         const barrelLength = size * 1.2;
         const barrelEnd = this.position.add(Vector2.fromAngle(this.rotation, barrelLength));
         renderer.drawLine(this.position, barrelEnd, Color.NEON_CYAN, 6);
+
+        // Show mount hint if near Core
+        if (game.state.coreBuilding) {
+            const distance = this.position.distanceTo(game.state.coreBuilding.position);
+            if (distance <= this.mountRange + game.state.coreBuilding.size) {
+                // Draw prompt above player
+                renderer.drawText(
+                    'Press E to Mount',
+                    this.position.add(new Vector2(0, -size - 5)),
+                    Color.YELLOW,
+                    14
+                );
+
+                // Draw connection line to Core
+                renderer.drawLine(this.position, game.state.coreBuilding.position, Color.YELLOW, 2);
+            }
+        }
+    }
+
+    // Helper to check if player can mount
+    canMount() {
+        if (this.isMounted) return false;
+        if (!game.state.coreBuilding) return false;
+
+        const distance = this.position.distanceTo(game.state.coreBuilding.position);
+        return distance <= this.mountRange + game.state.coreBuilding.size;
     }
 }

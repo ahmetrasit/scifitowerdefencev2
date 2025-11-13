@@ -32,6 +32,10 @@ class Core extends Building {
     }
 
     render(renderer) {
+        // Check if player is mounted
+        const playerMounted = game.state.player && game.state.player.isMounted &&
+                              game.state.player.mountedBuilding === this;
+
         // Draw core as a large hexagon
         const size = this.size;
         const points = [];
@@ -40,16 +44,43 @@ class Core extends Building {
             points.push(this.position.add(Vector2.fromAngle(angle, size)));
         }
 
-        // Draw bright cyan fill
-        renderer.drawPolygon(points, Color.NEON_CYAN, true);
+        // Draw bright cyan fill (brighter when manned)
+        const fillColor = playerMounted ? new Color(0, 255, 255) : Color.NEON_CYAN;
+        renderer.drawPolygon(points, fillColor, true);
 
         // Draw darker cyan outline
         const outlineColor = new Color(0, 200, 200);
         renderer.drawPolygon(points, outlineColor, false);
 
-        // Draw pulsing core effect
+        // Draw pulsing core effect (more intense when manned)
         const glowSize = size * 0.6;
-        renderer.drawGlow(this.position, glowSize, Color.NEON_CYAN, 0.3);
+        const glowIntensity = playerMounted ? 0.5 : 0.3;
+        renderer.drawGlow(this.position, glowSize, Color.NEON_CYAN, glowIntensity);
+
+        // If player is mounted, show turret barrels
+        if (playerMounted) {
+            // Draw multiple turret barrels around the core
+            const barrelCount = 8;
+            for (let i = 0; i < barrelCount; i++) {
+                const angle = (Math.PI * 2 / barrelCount) * i;
+                const barrelStart = this.position.add(Vector2.fromAngle(angle, size * 0.7));
+                const barrelEnd = this.position.add(Vector2.fromAngle(angle, size * 1.2));
+                renderer.drawLine(barrelStart, barrelEnd, Color.YELLOW, 4);
+            }
+
+            // Draw main weapon pointing at mouse
+            const barrelLength = size * 1.5;
+            const barrelEnd = this.position.add(Vector2.fromAngle(game.state.player.rotation, barrelLength));
+            renderer.drawLine(this.position, barrelEnd, Color.ORANGE, 8);
+
+            // Draw "MANNED" indicator
+            renderer.drawText(
+                'MANNED - Press E to Dismount',
+                this.position.add(new Vector2(0, -size - 15)),
+                Color.YELLOW,
+                16
+            );
+        }
 
         // Draw health bar
         const healthPercent = this.health / this.maxHealth;
