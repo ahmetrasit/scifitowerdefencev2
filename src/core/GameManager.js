@@ -37,11 +37,19 @@ class GameManager {
     initialize() {
         console.log('Initializing game...');
 
-        // Create player at origin
-        this.state.player = new Player(new Vector2(0, 0));
+        // Create core building at origin
+        this.state.coreBuilding = new Core(new Vector2(0, 0));
+        this.state.buildings.push(this.state.coreBuilding);
+        console.log('Core building created at origin');
 
-        // Initialize managers (placeholder until we implement them)
-        // this.waveManager = new WaveManager();
+        // Create player near the core
+        this.state.player = new Player(new Vector2(25, 0));
+        console.log('Player created at (25, 0)');
+
+        // Initialize managers
+        this.waveManager = new WaveManager(this);
+        console.log('WaveManager initialized');
+
         // this.powerManager = new PowerManager();
         // this.buildingPlacementSystem = new BuildingPlacementSystem();
 
@@ -209,6 +217,27 @@ class GameManager {
             16
         );
         y += 20;
+
+        // Wave timer / countdown
+        if (this.waveManager) {
+            const timeUntilWave = this.waveManager.getTimeUntilNextWave();
+            if (timeUntilWave > 0) {
+                this.renderer.drawTextUI(
+                    `Next wave in: ${Math.ceil(timeUntilWave)}s`,
+                    new Vector2(padding, y),
+                    Color.YELLOW,
+                    14
+                );
+            } else {
+                this.renderer.drawTextUI(
+                    'WAVE IN PROGRESS',
+                    new Vector2(padding, y),
+                    Color.RED,
+                    14
+                );
+            }
+            y += 18;
+        }
 
         // Enemy count
         this.renderer.drawTextUI(

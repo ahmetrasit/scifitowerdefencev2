@@ -28,10 +28,8 @@ window.addEventListener('load', () => {
         loadingElement.classList.add('hidden');
     }
 
-    // Add some test enemies for demonstration
-    addTestEnemies();
-
     console.log('Game initialized. Starting game loop...');
+    console.log('First wave will start in 30 seconds...');
 
     // Start game loop
     game.run();
@@ -39,59 +37,30 @@ window.addEventListener('load', () => {
     console.log('Game is running! Controls: WASD = Move, Mouse = Aim & Shoot');
 });
 
-// Helper function to spawn test enemies
-function addTestEnemies() {
-    const enemyCount = 12;
-
-    // Define spawn zones around the map
-    const spawnZones = [
-        { x: 40, y: 0, spread: 15 },      // Right
-        { x: -40, y: 0, spread: 15 },     // Left
-        { x: 0, y: 40, spread: 15 },      // Bottom
-        { x: 0, y: -40, spread: 15 },     // Top
-        { x: 30, y: 30, spread: 10 },     // Bottom-right
-        { x: -30, y: 30, spread: 10 },    // Bottom-left
-        { x: 30, y: -30, spread: 10 },    // Top-right
-        { x: -30, y: -30, spread: 10 }    // Top-left
-    ];
-
-    for (let i = 0; i < enemyCount; i++) {
-        // Pick a random spawn zone
-        const zone = spawnZones[i % spawnZones.length];
-
-        // Add some randomness within the zone
-        const offsetX = (Math.random() - 0.5) * zone.spread;
-        const offsetY = (Math.random() - 0.5) * zone.spread;
-
-        const x = zone.x + offsetX;
-        const y = zone.y + offsetY;
-
-        const enemy = new Enemy(new Vector2(x, y));
-        game.state.enemies.push(enemy);
-        console.log(`Spawned enemy ${i+1} at (${x.toFixed(1)}, ${y.toFixed(1)})`);
-    }
-
-    console.log(`Spawned ${enemyCount} test enemies total. Current enemy count: ${game.state.enemies.length}`);
-}
-
-// Expose helper functions for debugging
-window.spawnEnemy = (x = 0, y = 0) => {
-    const enemy = new Enemy(new Vector2(x, y));
+// Debug helper functions for testing
+window.spawnEnemy = (type = 'swarmer', x = 0, y = 0) => {
+    const enemy = new Enemy(type, new Vector2(x, y));
     game.state.enemies.push(enemy);
-    console.log(`Spawned enemy at (${x}, ${y})`);
+    console.log(`Spawned ${type} enemy at (${x}, ${y})`);
 };
 
-window.spawnEnemies = (count = 5) => {
+window.spawnEnemies = (count = 5, type = 'swarmer') => {
     for (let i = 0; i < count; i++) {
         const angle = Math.random() * Math.PI * 2;
-        const distance = 20 + Math.random() * 20;
+        const distance = 40 + Math.random() * 30;
         const x = Math.cos(angle) * distance;
         const y = Math.sin(angle) * distance;
 
-        const enemy = new Enemy(new Vector2(x, y));
+        const enemy = new Enemy(type, new Vector2(x, y));
         game.state.enemies.push(enemy);
     }
-    console.log(`Spawned ${count} enemies`);
+    console.log(`Spawned ${count} ${type} enemies`);
+};
+
+window.startWave = () => {
+    if (game.waveManager) {
+        game.waveManager.startNextWave();
+    }
 };
 
 window.clearEnemies = () => {
@@ -106,7 +75,8 @@ window.addResources = (amount = 100) => {
 };
 
 console.log('Game loaded. Debug commands available:');
-console.log('  spawnEnemy(x, y) - Spawn enemy at position');
-console.log('  spawnEnemies(count) - Spawn multiple enemies');
+console.log('  spawnEnemy(type, x, y) - Spawn enemy at position (types: swarmer, tank, runner, support, boss)');
+console.log('  spawnEnemies(count, type) - Spawn multiple enemies');
+console.log('  startWave() - Start next wave immediately');
 console.log('  clearEnemies() - Remove all enemies');
 console.log('  addResources(amount) - Add resources');

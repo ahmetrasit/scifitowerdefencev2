@@ -50,6 +50,11 @@ class Grid {
                gridPos.y >= 0 && gridPos.y < this.height;
     }
 
+    // Alias for isValid (for pathfinding compatibility)
+    isInBounds(gridPos) {
+        return this.isValid(gridPos);
+    }
+
     // Check if tile is walkable
     isWalkable(gridPos) {
         if (!this.isValid(gridPos)) return false;
