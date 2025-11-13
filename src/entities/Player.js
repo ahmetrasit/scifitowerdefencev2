@@ -8,7 +8,7 @@ class Player extends Entity {
         this.maxHealth = 100;
         this.health = 100;
         this.speed = 50.0;
-        this.size = 2.5;
+        this.size = 7.5;  // 3x larger (was 2.5)
 
         this.velocity = new Vector2(0, 0);
 
@@ -120,12 +120,12 @@ class Player extends Entity {
         // Draw health bar if damaged
         if (this.health < this.maxHealth) {
             const healthPercent = this.health / this.maxHealth;
-            renderer.drawHealthBar(this.position, 3.0, 0.4, healthPercent, 2.5);
+            renderer.drawHealthBar(this.position, 9.0, 1.0, healthPercent, 8.0);
         }
 
         // Draw weapon barrel in cyan
         const barrelLength = size * 1.2;
         const barrelEnd = this.position.add(Vector2.fromAngle(this.rotation, barrelLength));
-        renderer.drawLine(this.position, barrelEnd, Color.NEON_CYAN, 3);
+        renderer.drawLine(this.position, barrelEnd, Color.NEON_CYAN, 6);
     }
 }

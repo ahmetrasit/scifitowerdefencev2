@@ -8,7 +8,7 @@ class Enemy extends Entity {
         this.maxHealth = 30;
         this.health = 30;
         this.speed = 20.0;
-        this.size = 1.5;  // Increased from 0.8 to be more visible
+        this.size = 3.75;  // 2.5x larger (was 1.5)
         this.damage = 5;
 
         this.velocity = new Vector2(0, 0);
@@ -63,11 +63,11 @@ class Enemy extends Entity {
         // Draw health bar
         if (this.health < this.maxHealth) {
             const healthPercent = this.health / this.maxHealth;
-            renderer.drawHealthBar(this.position, 2.0, 0.3, healthPercent, 1.8);
+            renderer.drawHealthBar(this.position, 5.0, 0.6, healthPercent, 4.5);
         }
 
         // Draw direction indicator (pointing at player)
         const dirEnd = this.position.add(Vector2.fromAngle(this.rotation, this.size * 1.5));
-        renderer.drawLine(this.position, dirEnd, Color.YELLOW, 2);
+        renderer.drawLine(this.position, dirEnd, Color.YELLOW, 4);
     }
 }

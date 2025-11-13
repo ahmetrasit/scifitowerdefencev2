@@ -12,7 +12,7 @@ class Projectile extends Entity {
         this.owner = owner; // 'player' or 'enemy'
 
         this.rotation = direction.angle();
-        this.size = 0.2;
+        this.size = 0.6;  // Larger to match scaled entities
     }
 
     update(deltaTime) {
@@ -45,9 +45,9 @@ class Projectile extends Entity {
     }
 
     isCollidingWith(entity) {
-        const hitRadius = 0.5;
         const distance = entity.position.distanceTo(this.position);
-        return distance < hitRadius + (entity.size || 0);
+        const combinedRadius = this.size + (entity.size || 0);
+        return distance < combinedRadius;
     }
 
     render(renderer) {
@@ -55,7 +55,7 @@ class Projectile extends Entity {
         renderer.drawCircle(this.position, this.size, Color.YELLOW, true);
 
         // Draw trail
-        const trailStart = this.position.subtract(this.velocity.normalized().multiply(0.5));
-        renderer.drawLine(trailStart, this.position, Color.ORANGE, 2);
+        const trailStart = this.position.subtract(this.velocity.normalized().multiply(1.5));
+        renderer.drawLine(trailStart, this.position, Color.ORANGE, 4);
     }
 }
