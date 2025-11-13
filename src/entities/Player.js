@@ -45,10 +45,15 @@ class Player extends Entity {
         if (inputDir.lengthSquared() > 0) {
             this.velocity = inputDir.normalized().multiply(this.speed);
         } else {
-            this.velocity = new Vector2(0, 0);
+            // Explicitly set to zero - no drift
+            this.velocity.x = 0;
+            this.velocity.y = 0;
         }
 
-        this.position = this.position.add(this.velocity.multiply(deltaTime));
+        // Only update position if velocity is non-zero
+        if (this.velocity.lengthSquared() > 0.01) {
+            this.position = this.position.add(this.velocity.multiply(deltaTime));
+        }
     }
 
     updateRotation(input) {

@@ -22,9 +22,10 @@ class Enemy extends Entity {
             this.position = this.position.add(this.velocity.multiply(deltaTime));
             this.rotation = direction.angle();
 
-            // Simple collision with player
+            // Simple collision with player (accounting for both sizes)
             const distanceToPlayer = this.position.distanceTo(game.state.player.position);
-            if (distanceToPlayer < 1.5) {
+            const collisionDistance = this.size + game.state.player.size;
+            if (distanceToPlayer < collisionDistance) {
                 game.state.player.takeDamage(this.damage * deltaTime);
             }
         }

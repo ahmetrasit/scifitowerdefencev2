@@ -94,9 +94,9 @@ class GameManager {
             this.state.player.update(this.deltaTime, this.input);
         }
 
-        // Update camera to follow player
+        // Update camera to follow player (tighter follow for less drift feeling)
         if (this.state.player) {
-            this.camera.follow(this.state.player.position, 0.1);
+            this.camera.follow(this.state.player.position, 0.2);
         }
 
         // Update all enemies
