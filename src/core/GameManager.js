@@ -117,6 +117,11 @@ class GameManager {
         for (let i = this.state.projectiles.length - 1; i >= 0; i--) {
             const projectile = this.state.projectiles[i];
             projectile.update(this.deltaTime);
+
+            // Remove if destroyed
+            if (projectile.isDestroyed) {
+                this.state.projectiles.splice(i, 1);
+            }
         }
 
         // Update all buildings

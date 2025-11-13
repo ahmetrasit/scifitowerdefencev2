@@ -16,6 +16,8 @@ class Projectile extends Entity {
     }
 
     update(deltaTime) {
+        if (this.isDestroyed) return;
+
         const movement = this.velocity.multiply(deltaTime);
         this.position = this.position.add(movement);
         this.distanceTraveled += movement.length();
@@ -24,20 +26,25 @@ class Projectile extends Entity {
         this.checkCollisions();
 
         // Check range
-        if (this.distanceTraveled >= this.maxRange) {
+        if (!this.isDestroyed && this.distanceTraveled >= this.maxRange) {
             this.destroy();
-            game.state.removeEntity(this);
         }
     }
 
     checkCollisions() {
+        if (this.isDestroyed) return;
+
         if (this.owner === 'player') {
-            // Check hit on enemies
-            for (const enemy of game.state.enemies) {
+            // Check hit on enemies - use simple for loop for safety
+            for (let i = 0; i < game.state.enemies.length; i++) {
+                const enemy = game.state.enemies[i];
+
+                // Skip if enemy is already destroyed
+                if (!enemy || enemy.isDestroyed) continue;
+
                 if (this.isCollidingWith(enemy)) {
                     enemy.takeDamage(this.damage);
                     this.destroy();
-                    game.state.removeEntity(this);
                     return;
                 }
             }
@@ -51,11 +58,16 @@ class Projectile extends Entity {
     }
 
     render(renderer) {
+        if (!this.position) return;
+
         // Draw projectile as a small circle
         renderer.drawCircle(this.position, this.size, Color.YELLOW, true);
 
-        // Draw trail
-        const trailStart = this.position.subtract(this.velocity.normalized().multiply(1.5));
-        renderer.drawLine(trailStart, this.position, Color.ORANGE, 4);
+        // Draw trail (with safety check)
+        if (this.velocity && this.velocity.lengthSquared() > 0) {
+            const trailDir = this.velocity.normalized();
+            const trailStart = this.position.subtract(trailDir.multiply(1.5));
+            renderer.drawLine(trailStart, this.position, Color.ORANGE, 4);
+        }
     }
 }
