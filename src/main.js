@@ -41,14 +41,30 @@ window.addEventListener('load', () => {
 
 // Helper function to spawn test enemies
 function addTestEnemies() {
-    // Spawn a circle of enemies around the player
-    const enemyCount = 8;
-    const spawnRadius = 30;
+    const enemyCount = 12;
+
+    // Define spawn zones around the map
+    const spawnZones = [
+        { x: 40, y: 0, spread: 15 },      // Right
+        { x: -40, y: 0, spread: 15 },     // Left
+        { x: 0, y: 40, spread: 15 },      // Bottom
+        { x: 0, y: -40, spread: 15 },     // Top
+        { x: 30, y: 30, spread: 10 },     // Bottom-right
+        { x: -30, y: 30, spread: 10 },    // Bottom-left
+        { x: 30, y: -30, spread: 10 },    // Top-right
+        { x: -30, y: -30, spread: 10 }    // Top-left
+    ];
 
     for (let i = 0; i < enemyCount; i++) {
-        const angle = (i / enemyCount) * Math.PI * 2;
-        const x = Math.cos(angle) * spawnRadius;
-        const y = Math.sin(angle) * spawnRadius;
+        // Pick a random spawn zone
+        const zone = spawnZones[i % spawnZones.length];
+
+        // Add some randomness within the zone
+        const offsetX = (Math.random() - 0.5) * zone.spread;
+        const offsetY = (Math.random() - 0.5) * zone.spread;
+
+        const x = zone.x + offsetX;
+        const y = zone.y + offsetY;
 
         const enemy = new Enemy(new Vector2(x, y));
         game.state.enemies.push(enemy);
