@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sci-Fi Tower Defense - A real-time tower defense and automation game">
+    <title>Sci-Fi Tower Defense</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1a1a2e;
+            color: #eee;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+        }
+
+        #gameCanvas {
+            display: block;
+            background: #0f0f1e;
+            border: 2px solid #16213e;
+            margin: 0 auto;
+        }
+
+        #ui {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        #ui > * {
+            pointer-events: auto;
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: #0ff;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="1280" height="720"></canvas>
+    <div id="ui">
+        <div id="loading" class="loading">Loading Game...</div>
+    </div>
+
+    <!-- Core utilities -->
+    <script src="src/utils/Vector2.js"></script>
+    <script src="src/utils/Color.js"></script>
+    <script src="src/utils/Grid.js"></script>
+
+    <!-- Core systems -->
+    <script src="src/core/Input.js"></script>
+    <script src="src/core/Camera.js"></script>
+    <script src="src/core/Renderer.js"></script>
+    <script src="src/core/ResourceManager.js"></script>
+    <script src="src/core/GameState.js"></script>
+    <script src="src/core/GameManager.js"></script>
+
+    <!-- Entities -->
+    <script src="src/entities/Entity.js"></script>
+    <script src="src/entities/Player.js"></script>
+    <script src="src/entities/Enemy.js"></script>
+    <script src="src/entities/Projectile.js"></script>
+    <script src="src/entities/Building.js"></script>
+
+    <!-- Systems -->
+    <script src="src/systems/PathfindingSystem.js"></script>
+    <script src="src/systems/WaveManager.js"></script>
+    <script src="src/systems/PowerManager.js"></script>
+    <script src="src/systems/BuildingPlacementSystem.js"></script>
+
+    <!-- UI -->
+    <script src="src/ui/HUD.js"></script>
+
+    <!-- Main game entry point -->
+    <script src="src/main.js"></script>
+</body>
+</html>

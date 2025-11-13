@@ -1,0 +1,124 @@
+/**
+ * Player - Player character
+ */
+class Player extends Entity {
+    constructor(position) {
+        super(position);
+
+        this.maxHealth = 100;
+        this.health = 100;
+        this.speed = 50.0;
+        this.size = 1.0;
+
+        this.velocity = new Vector2(0, 0);
+
+        // Shooting
+        this.fireRate = 5.0; // Shots per second
+        this.lastFireTime = 0;
+        this.projectileSpeed = 200.0;
+        this.damage = 10;
+        this.range = 30.0;
+    }
+
+    update(deltaTime, input) {
+        // Update last fire time
+        this.lastFireTime += deltaTime;
+
+        // Movement
+        this.updateMovement(deltaTime, input);
+
+        // Rotation (aim at mouse)
+        this.updateRotation(input);
+
+        // Shooting
+        this.updateShooting(deltaTime, input);
+    }
+
+    updateMovement(deltaTime, input) {
+        const inputDir = new Vector2(0, 0);
+
+        if (input.isKeyPressed(Keys.W)) inputDir.y -= 1;
+        if (input.isKeyPressed(Keys.S)) inputDir.y += 1;
+        if (input.isKeyPressed(Keys.A)) inputDir.x -= 1;
+        if (input.isKeyPressed(Keys.D)) inputDir.x += 1;
+
+        if (inputDir.lengthSquared() > 0) {
+            this.velocity = inputDir.normalized().multiply(this.speed);
+        } else {
+            this.velocity = new Vector2(0, 0);
+        }
+
+        this.position = this.position.add(this.velocity.multiply(deltaTime));
+    }
+
+    updateRotation(input) {
+        const mousePos = input.getMouseWorldPosition();
+        const direction = mousePos.subtract(this.position);
+        this.rotation = direction.angle();
+    }
+
+    updateShooting(deltaTime, input) {
+        const cooldown = 1.0 / this.fireRate;
+
+        if (input.isMouseButtonPressed(MouseButtons.LEFT) && this.lastFireTime >= cooldown) {
+            this.fire();
+            this.lastFireTime = 0;
+        }
+    }
+
+    fire() {
+        const direction = Vector2.fromAngle(this.rotation);
+        const spawnPos = this.position.add(direction.multiply(this.size + 0.5));
+
+        const projectile = new Projectile(
+            spawnPos,
+            direction,
+            this.projectileSpeed,
+            this.damage,
+            this.range,
+            'player'
+        );
+
+        game.state.projectiles.push(projectile);
+    }
+
+    takeDamage(amount) {
+        this.health -= amount;
+
+        if (this.health <= 0) {
+            this.health = 0;
+            this.die();
+        }
+    }
+
+    die() {
+        console.log('Player died!');
+        game.state.gameActive = false;
+    }
+
+    render(renderer) {
+        // Draw player as a triangle pointing in rotation direction
+        const size = this.size;
+        const points = [
+            this.position.add(Vector2.fromAngle(this.rotation, size * 1.5)),
+            this.position.add(Vector2.fromAngle(this.rotation + Math.PI * 0.75, size)),
+            this.position.add(Vector2.fromAngle(this.rotation - Math.PI * 0.75, size))
+        ];
+
+        renderer.drawPolygon(points, Color.CYAN, true);
+
+        // Draw outline
+        renderer.drawPolygon(points, Color.WHITE, false);
+
+        // Draw health bar if damaged
+        if (this.health < this.maxHealth) {
+            const healthPercent = this.health / this.maxHealth;
+            renderer.drawHealthBar(this.position, 2.0, 0.3, healthPercent, 1.5);
+        }
+
+        // Draw weapon barrel
+        const barrelLength = size * 1.2;
+        const barrelEnd = this.position.add(Vector2.fromAngle(this.rotation, barrelLength));
+        renderer.drawLine(this.position, barrelEnd, Color.WHITE, 2);
+    }
+}
