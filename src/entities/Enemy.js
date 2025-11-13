@@ -24,11 +24,31 @@ class Enemy extends Entity {
             this.position = this.position.add(this.velocity.multiply(deltaTime));
             this.rotation = direction.angle();
 
+            // Check collision with other enemies (prevent piling up)
+            this.separateFromOtherEnemies();
+
             // Simple collision with player (accounting for both sizes)
             const distanceToPlayer = this.position.distanceTo(game.state.player.position);
             const collisionDistance = this.size + game.state.player.size;
             if (distanceToPlayer < collisionDistance) {
                 game.state.player.takeDamage(this.damage * deltaTime);
+            }
+        }
+    }
+
+    separateFromOtherEnemies() {
+        // Push away from other enemies to prevent stacking
+        for (const other of game.state.enemies) {
+            if (other === this) continue;
+
+            const distance = this.position.distanceTo(other.position);
+            const minDistance = this.size + other.size;
+
+            if (distance < minDistance && distance > 0.1) {
+                // Push away from each other
+                const pushDirection = this.position.subtract(other.position).normalized();
+                const pushAmount = (minDistance - distance) * 0.5;
+                this.position = this.position.add(pushDirection.multiply(pushAmount));
             }
         }
     }

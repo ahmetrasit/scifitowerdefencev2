@@ -17,7 +17,7 @@ class Player extends Entity {
         this.lastFireTime = 0;
         this.projectileSpeed = 200.0;
         this.damage = 10;
-        this.range = 30.0;
+        this.range = 90.0;  // 3x larger (was 30.0)
     }
 
     update(deltaTime, input) {
