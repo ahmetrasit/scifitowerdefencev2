@@ -82,15 +82,15 @@ class Player extends Entity {
         this.isMounted = true;
         this.mountedBuilding = building;
 
-        // Enhanced stats when mounted on Core
+        // Enhanced stats when mounted on Core - Cannon mode
         if (building.isCore) {
-            this.fireRate = this.baseFireRate * 3.0;      // 3x fire rate
-            this.damage = this.baseDamage * 2.0;          // 2x damage
-            this.range = this.baseRange * 2.0;            // 2x range
-            this.projectileSpeed = this.baseProjectileSpeed * 1.5;  // 1.5x projectile speed
+            this.fireRate = this.baseFireRate * 0.4;      // Slower fire rate (40% of normal)
+            this.damage = this.baseDamage * 5.0;          // 5x damage
+            this.range = this.baseRange * 2.5;            // 2.5x range
+            this.projectileSpeed = this.baseProjectileSpeed * 0.7;  // Slower projectile speed
         }
 
-        console.log(`Mounted ${building.constructor.name}! Enhanced stats: ${this.damage} damage, ${this.fireRate.toFixed(1)} fire rate, ${this.range} range`);
+        console.log(`Mounted ${building.constructor.name}! CANNON MODE: ${this.damage} damage, ${this.fireRate.toFixed(1)} fire rate, ${this.range} range`);
     }
 
     dismount() {
@@ -147,14 +147,30 @@ class Player extends Entity {
         const direction = Vector2.fromAngle(this.rotation);
         const spawnPos = this.position.add(direction.multiply(this.size + 0.5));
 
-        const projectile = new Projectile(
-            spawnPos,
-            direction,
-            this.projectileSpeed,
-            this.damage,
-            this.range,
-            'player'
-        );
+        let projectile;
+
+        // When mounted on Core, fire powerful cannon shots with splash damage
+        if (this.isMounted && this.mountedBuilding && this.mountedBuilding.isCore) {
+            projectile = new CannonShot(
+                spawnPos,
+                direction,
+                this.projectileSpeed,
+                this.damage,
+                this.range,
+                'player',
+                20.0  // Splash radius
+            );
+        } else {
+            // Normal bullets
+            projectile = new Projectile(
+                spawnPos,
+                direction,
+                this.projectileSpeed,
+                this.damage,
+                this.range,
+                'player'
+            );
+        }
 
         game.state.projectiles.push(projectile);
     }
