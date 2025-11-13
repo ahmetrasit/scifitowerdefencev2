@@ -15,16 +15,17 @@ class WaveManager {
         this.enemiesRemainingInWave = 0;
         this.spawnedEnemies = 0;
 
-        // Spawn points around the map (will be randomized)
+        // Spawn points around the map - farther from core
+        // Arranged in 8 cardinal and diagonal directions
         this.spawnPoints = [
-            new Vector2(80, 0),      // Right
-            new Vector2(-80, 0),     // Left
-            new Vector2(0, 80),      // Bottom
-            new Vector2(0, -80),     // Top
-            new Vector2(60, 60),     // Bottom-right
-            new Vector2(-60, 60),    // Bottom-left
-            new Vector2(60, -60),    // Top-right
-            new Vector2(-60, -60)    // Top-left
+            new Vector2(180, 0),      // Right
+            new Vector2(-180, 0),     // Left
+            new Vector2(0, 180),      // Bottom
+            new Vector2(0, -180),     // Top
+            new Vector2(140, 140),    // Bottom-right (diagonal)
+            new Vector2(-140, 140),   // Bottom-left (diagonal)
+            new Vector2(140, -140),   // Top-right (diagonal)
+            new Vector2(-140, -140)   // Top-left (diagonal)
         ];
 
         // Delayed spawn queue
